@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Water_Level_Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <style>
+    body{font-family:system-ui, Kanit, sans-serif;background:#f5f6fa;margin:0}
+    header{background:#fff;border-bottom:1px solid #e5e7eb;padding:12px 16px}
+    main{max-width:1000px;margin:20px auto;padding:0 16px}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:14px}
+    .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+    .kpi .v{font-size:26px;font-weight:700}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{border-bottom:1px solid #eef0f2;padding:8px;text-align:left}
+    th{background:#fafafa;position:sticky;top:0}
+    .right{text-align:right}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:1fr}}
+
+    /* ปุ่มเลือกจำนวนจุดกราฟ */
+    .view-btn{padding:6px 12px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;cursor:pointer;transition:0.2s}
+    .view-btn:hover{background:#f3f4f6}
+    .view-btn.active{background:#0ea5e9;color:#fff;border-color:#0ea5e9}
+  </style>
+</head>
+<body>
+  <header>
+    <h2>💧 Water Level Dashboard</h2>
+  </header>
+
+  <main>
+    <div id="boardStatus" 
+     style="padding:10px; margin:10px 0; font-weight:bold; 
+            border-radius:8px; text-align:center; color:white;">
+      กำลังตรวจสอบการเชื่อมต่อ...
+    </div>
+
+    <div id="dustStatus" style="
+      padding:10px; margin:10px 0; font-weight:700; color:#fff;
+      border-radius:10px; text-align:center;">
+      กำลังประเมินสถานะระดับน้ำ...
+    </div>
+
+    <section class="kpis">
+      <div class="card kpi">
+        <div>ระยะจากหัวถึงผิวน้ำ (cm)</div>
+        <div class="v" id="kpiDistance">—</div>
+      </div>
+      <div class="card kpi">
+        <div>ระดับน้ำจากก้นถัง (cm)</div>
+        <div class="v" id="kpiLevel">—</div>
+      </div>
+      <div class="card kpi">
+        <div>เปอร์เซ็นต์น้ำ (%)</div>
+        <div class="v" id="kpiPercent">—</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong>Level (cm) vs Time</strong>
+          <div>
+            <button id="btnRefresh">Refresh</button>
+          </div>
+        </div>
+        <canvas id="waterChart" height="300"></canvas>
+
+        <div id="viewControls" style="display:flex;justify-content:center;gap:8px;margin-top:12px">
+          <button class="view-btn" data-count="10">10 จุด</button>
+          <button class="view-btn active" data-count="20">20 จุด</button>
+          <button class="view-btn" data-count="all">ทั้งหมด</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <strong>Percent (%) ล่าสุด</strong>
+        <canvas id="percentChart" height="300"></canvas>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>รายการทั้งหมด (ล่าสุดก่อน)</strong>
+        <small id="countLabel"></small>
+      </div>
+      <div style="max-height:360px;overflow:auto">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>เมื่อ</th>
+              <th>ts</th>
+              <th>Distance (cm)</th>
+              <th>Level (cm)</th>
+              <th class="right">Percent (%)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
